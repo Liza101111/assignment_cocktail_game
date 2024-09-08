@@ -19,11 +19,15 @@ public class CocktailService {
     public Cocktail getRandomCocktail() {
         Cocktail cocktail;
 
-        do{
+        do {
             cocktail = cocktailApiUtil.getRandomCocktail();
         } while (cocktails.contains(cocktail.getId()));
 
         cocktails.add(cocktail.getId());
         return cocktail;
+    }
+
+    public void resetGame() {
+        cocktails.clear();
     }
 }
