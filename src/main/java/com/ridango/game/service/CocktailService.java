@@ -26,8 +26,4 @@ public class CocktailService {
         cocktails.add(cocktail.getIdDrink());
         return cocktail;
     }
-
-    public void resetGame() {
-        cocktails.clear();
-    }
 }
