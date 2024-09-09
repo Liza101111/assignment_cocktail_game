@@ -21,9 +21,9 @@ public class CocktailService {
 
         do {
             cocktail = cocktailApiUtil.getRandomCocktail();
-        } while (cocktails.contains(cocktail.getId()));
+        } while (cocktails.contains(cocktail.getIdDrink()));
 
-        cocktails.add(cocktail.getId());
+        cocktails.add(cocktail.getIdDrink());
         return cocktail;
     }
 

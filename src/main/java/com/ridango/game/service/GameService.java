@@ -27,7 +27,10 @@ public class GameService {
         attemptsLeft = 5;
         score = 0;
         currentCocktail = cocktailService.getRandomCocktail();
-        maskedName = maskCocktailName(currentCocktail.getName(), 0);
+        if (currentCocktail == null || currentCocktail.getStrDrink() == null || currentCocktail.getStrDrink().isEmpty()) {
+            throw new IllegalStateException("Random cocktail or cocktail name is missing!");
+        }
+        maskedName = maskCocktailName(currentCocktail.getStrDrink(), 0);
         return cocktailService.getRandomCocktail();
     }
 
@@ -36,6 +39,11 @@ public class GameService {
     }
 
     public String maskCocktailName(String name, int revealCount) {
+
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Cocktail name cannot be null or empty");
+        }
+
         StringBuilder maskedName = new StringBuilder();
         int revealed = 0;
         for (int i = 0; i < name.length(); i++) {
