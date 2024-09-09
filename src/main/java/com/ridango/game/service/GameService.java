@@ -10,6 +10,8 @@ public class GameService {
 
     private final CocktailService cocktailService;
     private final HighScoreRepository highScoreRepository;
+    private Cocktail currentCocktail;
+    private String maskedName;
     private int attemptsLeft;
     private int score;
 
@@ -24,7 +26,33 @@ public class GameService {
         cocktailService.resetGame();
         attemptsLeft = 5;
         score = 0;
+        currentCocktail = cocktailService.getRandomCocktail();
+        maskedName = maskCocktailName(currentCocktail.getName(), 0);
         return cocktailService.getRandomCocktail();
+    }
+
+    public String getMaskedCocktailName() {
+        return maskedName;
+    }
+
+    public String maskCocktailName(String name, int revealCount) {
+        StringBuilder maskedName = new StringBuilder();
+        int revealed = 0;
+        for (int i = 0; i < name.length(); i++) {
+            if (revealed < revealCount && Character.isLetter(name.charAt(i))) {
+                maskedName.append(name.charAt(i));
+                revealed++;
+            } else if (name.charAt(i) == ' ') {
+                maskedName.append(' ');
+            } else {
+                maskedName.append('_');
+            }
+        }
+        return maskedName.toString();
+    }
+
+    public String getCocktailInstructions() {
+        return currentCocktail.getStrInstructions();
     }
 
     public int getAttemptsLeft() {
