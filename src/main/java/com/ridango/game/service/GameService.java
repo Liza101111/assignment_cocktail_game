@@ -5,10 +5,8 @@ import com.ridango.game.model.HighScore;
 import com.ridango.game.repository.HighScoreRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class GameService {
@@ -105,14 +103,18 @@ public class GameService {
     }
 
     private String formatIngredients() {
-        List<String> ingredients = new ArrayList<>();
-        if (currentCocktail.getStrIngredient1() != null) ingredients.add(currentCocktail.getStrIngredient1());
-        if (currentCocktail.getStrIngredient2() != null) ingredients.add(currentCocktail.getStrIngredient2());
-        if (currentCocktail.getStrIngredient3() != null) ingredients.add(currentCocktail.getStrIngredient3());
-        if (currentCocktail.getStrIngredient4() != null) ingredients.add(currentCocktail.getStrIngredient4());
-        if (currentCocktail.getStrIngredient5() != null) ingredients.add(currentCocktail.getStrIngredient5());
+        List<String> ingredients = Arrays.asList(
+                        currentCocktail.getStrIngredient1(),
+                        currentCocktail.getStrIngredient2(),
+                        currentCocktail.getStrIngredient3(),
+                        currentCocktail.getStrIngredient4(),
+                        currentCocktail.getStrIngredient5()
+                ).stream()
+                .filter(Objects::nonNull)
+                .filter(ingredient -> !ingredient.isEmpty())
+                .collect(Collectors.toList());
 
-        return String.join(", ", ingredients);
+        return ingredients.isEmpty() ? "No ingredients available" : String.join(", ", ingredients);
     }
 
     public int getAttemptsLeft() {
