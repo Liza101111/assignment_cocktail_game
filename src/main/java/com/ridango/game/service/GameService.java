@@ -5,8 +5,11 @@ import com.ridango.game.model.HighScore;
 import com.ridango.game.repository.HighScoreRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class GameService {
@@ -42,6 +45,10 @@ public class GameService {
         }
 
         maskedName = maskCocktailName(currentCocktail.getStrDrink(), revealedLetters);
+        return currentCocktail;
+    }
+
+    public Cocktail getCurrentCocktail() {
         return currentCocktail;
     }
 
@@ -83,10 +90,10 @@ public class GameService {
     }
 
     public String wrongGuessOrSkip() {
-        reduceAttempts();
         if (isGameOver()) {
             return "Game Over! The cocktail was: " + currentCocktail.getStrDrink();
         }
+        reduceAttempts();
         return "Wrong guess! " + revealMoreLetters() + "\nAttempts left: " + attemptsLeft + "\nAdditional Info: " + getAdditionalCocktailInfo();
     }
 
@@ -103,18 +110,11 @@ public class GameService {
     }
 
     private String formatIngredients() {
-        List<String> ingredients = Arrays.asList(
-                        currentCocktail.getStrIngredient1(),
-                        currentCocktail.getStrIngredient2(),
-                        currentCocktail.getStrIngredient3(),
-                        currentCocktail.getStrIngredient4(),
-                        currentCocktail.getStrIngredient5()
-                ).stream()
+        return Stream.of(currentCocktail.getStrIngredient1(), currentCocktail.getStrIngredient2(),
+                        currentCocktail.getStrIngredient3(), currentCocktail.getStrIngredient4(), currentCocktail.getStrIngredient5())
                 .filter(Objects::nonNull)
                 .filter(ingredient -> !ingredient.isEmpty())
-                .collect(Collectors.toList());
-
-        return ingredients.isEmpty() ? "No ingredients available" : String.join(", ", ingredients);
+                .collect(Collectors.joining(", "));
     }
 
     public int getAttemptsLeft() {
@@ -128,7 +128,7 @@ public class GameService {
     }
 
     public boolean isGameOver() {
-        return attemptsLeft == 0;
+        return attemptsLeft <= 0;
     }
 
     public void increaseScore() {

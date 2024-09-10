@@ -2,10 +2,12 @@ package com.ridango.game.Controller;
 
 import com.ridango.game.model.Cocktail;
 import com.ridango.game.service.GameService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/game")
 public class GameController {
@@ -33,6 +35,7 @@ public class GameController {
             String response = gameService.wrongGuessOrSkip();
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
+            log.error("Error skipping turn", e);
             return new ResponseEntity<>("Failed to skip turn.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -44,11 +47,11 @@ public class GameController {
         }
 
         try {
-            String maskedCocktailName = gameService.getMaskedCocktailName();
-            if (guess.equalsIgnoreCase(maskedCocktailName)) {
+            String originalCocktailName = gameService.getCurrentCocktail().getStrDrink();
+            if (guess.equalsIgnoreCase(originalCocktailName)) {
                 gameService.increaseScore();
                 String successMessage = String.format("Correct! The cocktail is %s. Your score: %d",
-                        maskedCocktailName, gameService.getScore());
+                        originalCocktailName, gameService.getScore());
                 return new ResponseEntity<>(successMessage, HttpStatus.OK);
             } else {
                 String response = gameService.wrongGuessOrSkip();
