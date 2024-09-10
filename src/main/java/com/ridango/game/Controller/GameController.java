@@ -17,50 +17,81 @@ public class GameController {
 
     @GetMapping("/start")
     public ResponseEntity<String> startNewGame() {
-        Cocktail newCocktail = gameService.startNewGame();
-        String response = String.format("Instructions: %s\nGuess the cocktail: %s",
-                gameService.getCocktailInstructions(), gameService.getMaskedCocktailName());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        try {
+            Cocktail newCocktail = gameService.startNewGame();
+            String response = String.format("Instructions: %s\nGuess the cocktail: %s",
+                    gameService.getCocktailInstructions(), gameService.getMaskedCocktailName());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to start a new game.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/skip")
     public ResponseEntity<String> skipTurn() {
-        String response = gameService.wrongGuessOrSkip();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        try {
+            String response = gameService.wrongGuessOrSkip();
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to skip turn.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/guess")
-    public ResponseEntity<String> makeGuess(@RequestParam String guess) {
-        String cocktailName = gameService.getMaskedCocktailName();
+    public ResponseEntity<String> makeGuess(@RequestParam(required = false) String guess) {
+        if (guess == null || guess.trim().isEmpty()) {
+            return new ResponseEntity<>("Guess cannot be empty.", HttpStatus.BAD_REQUEST);
+        }
 
-        if (guess.equalsIgnoreCase(gameService.getMaskedCocktailName())) {
-            gameService.increaseScore();
-            String successMessage = String.format("Correct! The cocktail is %s. Your score: %d",
-                    gameService.getMaskedCocktailName(), gameService.getScore());
-            return new ResponseEntity<>(successMessage, HttpStatus.OK);
-        } else {
-            String response = gameService.wrongGuessOrSkip();
-            return new ResponseEntity<>(response, HttpStatus.OK);
+        try {
+            String maskedCocktailName = gameService.getMaskedCocktailName();
+            if (guess.equalsIgnoreCase(maskedCocktailName)) {
+                gameService.increaseScore();
+                String successMessage = String.format("Correct! The cocktail is %s. Your score: %d",
+                        maskedCocktailName, gameService.getScore());
+                return new ResponseEntity<>(successMessage, HttpStatus.OK);
+            } else {
+                String response = gameService.wrongGuessOrSkip();
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error processing guess.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/status")
     public ResponseEntity<String> getGameStatus() {
-        String response = String.format("Masked cocktail name: %s\nAttempts left: %d",
-                gameService.getMaskedCocktailName(), gameService.getAttemptsLeft());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        try {
+            String response = String.format("Masked cocktail name: %s\nAttempts left: %d",
+                    gameService.getMaskedCocktailName(), gameService.getAttemptsLeft());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to retrieve game status.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/hint")
     public ResponseEntity<String> getHint() {
-        String additionalInfo = gameService.getAdditionalCocktailInfo();
-        return new ResponseEntity<>(additionalInfo, HttpStatus.OK);
+        try {
+            String additionalInfo = gameService.getAdditionalCocktailInfo();
+            return new ResponseEntity<>(additionalInfo, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to retrieve hint.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/saveScore")
-    public ResponseEntity<String> saveHighScore(@RequestParam String playerName) {
-        gameService.saveHighScore(playerName);
-        String response = String.format("High score saved for player: %s", playerName);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<String> saveHighScore(@RequestParam(required = false) String playerName) {
+        if (playerName == null || playerName.trim().isEmpty()) {
+            return new ResponseEntity<>("Player name cannot be empty.", HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            gameService.saveHighScore(playerName);
+            String response = String.format("High score saved for player: %s", playerName);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to save high score.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
