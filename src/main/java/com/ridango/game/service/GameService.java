@@ -3,6 +3,7 @@ package com.ridango.game.service;
 import com.ridango.game.model.Cocktail;
 import com.ridango.game.model.HighScore;
 import com.ridango.game.repository.HighScoreRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -10,7 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+@Slf4j
 @Service
 public class GameService {
 
@@ -39,6 +40,7 @@ public class GameService {
     public Cocktail startNewGame() {
         resetGameState();
         currentCocktail = cocktailService.getRandomCocktail();
+        log.info("Fetched Cocktail: {}", currentCocktail != null ? currentCocktail.getStrDrink() : "null");
 
         if (currentCocktail == null || currentCocktail.getStrDrink() == null || currentCocktail.getStrDrink().isEmpty()) {
             throw new IllegalStateException("Random cocktail or cocktail name is missing!");
