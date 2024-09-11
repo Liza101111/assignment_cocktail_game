@@ -48,7 +48,10 @@ public class GameController {
 
         try {
             String originalCocktailName = gameService.getCurrentCocktail().getStrDrink();
-            if (guess.equalsIgnoreCase(originalCocktailName)) {
+            String normalizedGuess = gameService.normalizeName(guess);
+            String normalizedCocktailName = gameService.normalizeName(originalCocktailName);
+
+            if (normalizedGuess.equals(normalizedCocktailName)) {
                 gameService.increaseScore();
                 String successMessage = String.format("Correct! The cocktail is %s. Your score: %d",
                         originalCocktailName, gameService.getScore());

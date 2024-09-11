@@ -129,6 +129,13 @@ public class GameService {
         }
     }
 
+    public String normalizeName(String name) {
+        if (name == null) {
+            return "";
+        }
+        return name.trim().toLowerCase().replaceAll("[^a-z0-9]", "");
+    }
+
     public boolean isGameOver() {
         return attemptsLeft <= 0;
     }

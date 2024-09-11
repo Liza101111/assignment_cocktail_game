@@ -96,6 +96,21 @@ public class GameServiceTest {
     }
 
     @Test
+    public void testNormalizeName() {
+        String nameWithSpaces = "  Mojito  ";
+        String normalized = gameService.normalizeName(nameWithSpaces);
+        assertEquals("mojito", normalized);
+
+        String nameWithPunctuation = "Mojito!";
+        normalized = gameService.normalizeName(nameWithPunctuation);
+        assertEquals("mojito", normalized);
+
+        String complexName = "A Day at the Beach";
+        normalized = gameService.normalizeName(complexName);
+        assertEquals("adayatthebeach", normalized);
+    }
+
+    @Test
     public void testIsGameOver() {
         gameService.startNewGame();
         for (int i = 0; i < 5; i++) {
