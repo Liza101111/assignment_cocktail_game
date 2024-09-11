@@ -1,11 +1,14 @@
 package com.ridango.game.Controller;
 
 import com.ridango.game.model.Cocktail;
+import com.ridango.game.model.HighScore;
 import com.ridango.game.service.GameService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @Slf4j
@@ -99,6 +102,17 @@ public class GameController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to save high score.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/high-scores")
+    public ResponseEntity<List<HighScore>> getHighScores() {
+        try {
+            List<HighScore> highScores = gameService.getHighScores();
+            return ResponseEntity.ok(highScores);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
         }
     }
 }
